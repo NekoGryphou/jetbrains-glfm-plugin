@@ -13,12 +13,16 @@
     { feature: "inapplicableTasks", transform: "transformInapplicableTasks" },
     { feature: "media", transform: "transformMedia" },
     { feature: "headingIds", transform: "assignHeadingIds" },
-    { feature: "tableOfContents", transform: "transformTableOfContents" },
     { feature: "footnotes", transform: "transformFootnotes" },
     { feature: "inlineDiff", transform: "transformInlineDiff" },
     { feature: "colorChips", transform: "transformColorChips" },
     { feature: "emoji", transform: "transformEmoji" },
     { feature: "references", transform: "transformReferences" },
+    // After the inline passes, so an entry shows the heading as rendered: a
+    // heading's `:warning:` reaches the contents as the glyph. An entry is a
+    // generated link, and the text passes skip both links and their own output,
+    // so anything copied in before them would stay raw for good.
+    { feature: "tableOfContents", transform: "transformTableOfContents" },
     // Last: the anchor is appended inside the heading, and everything that
     // reads a heading's text - the table of contents, the slugs - must see the
     // author's title rather than the permalink glyph.

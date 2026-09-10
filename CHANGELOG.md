@@ -5,6 +5,12 @@ All notable changes to this plugin are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- Table of contents entries show a heading as the preview renders it, so a
+  heading's `:warning:` reaches the contents as the glyph and `{+text+}` loses
+  its delimiters, instead of both being copied in as raw source.
+
 ## [0.1.0] - 2026-09-10
 
 Initial release.

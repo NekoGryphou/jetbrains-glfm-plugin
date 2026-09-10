@@ -11,6 +11,10 @@ const cases = [
   { name: "TOC [[_TOC_]]", md: "# One\n\n[[_TOC_]]\n\n## Two\n", expect: /<nav class="glfm-toc[\s\S]*href="#two"[^>]*>Two</ },
   { name: "TOC links to platform anchor", html: '<h2 id="platform-anchor">Title</h2><p>[TOC]</p>', expect: /href="#platform-anchor"/ },
   { name: "TOC [TOC]", md: "# One\n\n[TOC]\n\n## Two\n", expect: /<nav class="glfm-toc[\s\S]*href="#two"[^>]*>Two</ },
+  // An entry is a generated link, which every text pass skips, so the contents
+  // has to be built after them or a shortcode in a heading stays raw for good.
+  { name: "TOC entry shows a heading's emoji as the glyph", md: "[[_TOC_]]\n\n## :warning: Careful\n", expect: /glfm-toc-link[^>]*>\u26A0\uFE0F Careful</, reject: /glfm-toc-link[^>]*>:warning:/ },
+  { name: "TOC entry sheds inline diff delimiters", md: "[[_TOC_]]\n\n## Now {+faster+}\n", expect: /glfm-toc-link[^>]*>Now faster</ },
   { name: "details (blank lines)", md: "::: details Title\n\nBody **bold**\n\n:::\n", expect: /<details class="glfm-details[^>]*><summary>Title<\/summary>[\s\S]*<strong[ >]/, expectText: /Body bold/ },
   { name: "details (no blank lines)", md: "::: details Title\nline one\nline two\n:::\n", expect: /glfm-details-raw/ },
   { name: "details unterminated stays literal", md: "::: details Title\n\nBody\n", expectText: /::: details Title/ },

@@ -18,8 +18,10 @@ permissions:
 
 concurrency:
   group: build-${{ github.ref }}
-  # Never cancel a tagged run: it publishes a release.
-  cancel-in-progress: ${{ github.ref_type != 'tag' }}
+  # Never cancel a run that might publish: a tag, or a push to main carrying a
+  # version bump this run is about to release. Only branch and pull request
+  # builds are worth interrupting.
+  cancel-in-progress: ${{ github.ref_type != 'tag' && github.ref != 'refs/heads/main' }}
 
 jobs:
   # Everything in one job on purpose. Separate jobs do not share a filesystem,
@@ -82,16 +84,44 @@ jobs:
       - name: Tests
         run: ./gradlew --no-daemon check -x verifyPlugin
 
-      # A tag names the version outright, so that is the version built, and
-      # `pluginVersion` in gradle.properties is only the version in development.
-      # Any other build is stamped with the run number, which is unique and
-      # increasing - every build otherwise calls itself the same version. Such
-      # a build is never published; it only names its workflow artifact.
+      # A push to main whose declared version has no release yet is the release
+      # of that version: the bump is the intent, and this run is already testing,
+      # building and signing the exact commit that carries it.
+      #
+      # Done inside this run rather than by pushing a tag from it, because a tag
+      # pushed with `GITHUB_TOKEN` starts no workflow - a tag job would simply
+      # never fire - and because releasing here reuses the archive the verifier
+      # just passed instead of rebuilding the same commit.
+      - name: Decide whether this push releases
+        id: cut
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          declared=$(sed -n 's/^pluginVersion *= *//p' gradle.properties | tr -d '[:space:]')
+
+          if gh release view "v$declared" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "$declared is already released - this is a dev build."
+          else
+            echo "$declared has no release yet - this run publishes it."
+            echo "release=true" >> "$GITHUB_OUTPUT"
+            echo "version=$declared" >> "$GITHUB_OUTPUT"
+          fi
+
+      # A tag names the version outright, and so does the version bump decided
+      # above; either way that is the version built. Every other build is
+      # stamped with the run number, which is unique and increasing - a build
+      # would otherwise share its version with every other build of the same
+      # unreleased commit. Such a build is not published; it only names its
+      # workflow artifact.
       - name: Name this build
         id: build
         run: |
           if [ "$GITHUB_REF_TYPE" = tag ]; then
             version="${GITHUB_REF_NAME#v}"
+            echo "gradle=-PpluginVersion=$version" >> "$GITHUB_OUTPUT"
+          elif [ "${{ steps.cut.outputs.release }}" = true ]; then
+            version="${{ steps.cut.outputs.version }}"
             echo "gradle=-PpluginVersion=$version" >> "$GITHUB_OUTPUT"
           else
             declared=$(sed -n 's/^pluginVersion *= *//p' gradle.properties | tr -d '[:space:]')
@@ -137,7 +167,7 @@ jobs:
       # `if`, and a step's own `env` is not reliably available to its own.
       - name: Check what a release can do
         id: release
-        if: github.ref_type == 'tag'
+        if: github.ref_type == 'tag' || steps.cut.outputs.release == 'true'
         env:
           CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
           PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
@@ -159,15 +189,19 @@ jobs:
           PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
         run: ./gradlew --no-daemon signPlugin ${{ steps.build.outputs.gradle }}
 
-      # A tagged release. A tag with `dev` in it publishes as a pre-release,
-      # so `v0.2.0-dev.3` can be handed out as a durable link without
-      # presenting as final. Every other tag is a full release.
+      # The release itself, from either path: a pushed tag, or the version bump
+      # decided above - which is tagged here, since `gh release create` creates
+      # the tag it is given. A version with `dev` in it publishes as a
+      # pre-release, so `v0.2.0-dev.3` can be handed out as a durable link
+      # without presenting as final. Every other version is a full release.
       - name: Publish the release
-        if: github.ref_type == 'tag'
+        if: github.ref_type == 'tag' || steps.cut.outputs.release == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          version="${GITHUB_REF_NAME#v}"
+          # Whichever path got here, this is the version that was built.
+          version="${{ steps.build.outputs.version }}"
+          tag="v$version"
 
           # Prefer this version's own changelog section; fall back to the notes
           # GitHub generates from the commits.
@@ -186,7 +220,7 @@ jobs:
           [ -s notes.md ] || notes=(--generate-notes)
 
           prerelease=()
-          case "$GITHUB_REF_NAME" in *dev*) prerelease=(--prerelease) ;; esac
+          case "$version" in *dev*) prerelease=(--prerelease) ;; esac
 
           # The signed archive when there is one, so what is downloaded from
           # the release is what Marketplace received.
@@ -201,9 +235,10 @@ jobs:
             *)            asset="$archive" ;;
           esac
 
-          gh release create "$GITHUB_REF_NAME" "$asset" \
+          gh release create "$tag" "$asset" \
             --repo "$GITHUB_REPOSITORY" \
-            --title "${{ steps.build.outputs.version }}" \
+            --target "$GITHUB_SHA" \
+            --title "$version" \
             "${notes[@]}" "${prerelease[@]}"
 
       # Last on purpose. Marketplace can reject an upload for reasons that have

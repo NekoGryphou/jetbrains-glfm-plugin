@@ -138,14 +138,23 @@ skips itself when that browser is absent. Baselines live in
 
 ## Releasing
 
-Tag it. `v0.2.0` publishes a release; a tag with `dev` in it - `v0.2.0-dev.3` -
-publishes as a pre-release, and to a Marketplace channel of its own so a stable
-user is never offered it.
+Bump `pluginVersion` in `gradle.properties` and push it to `main`. A push whose
+declared version has no release yet is that release: the run that tests, builds
+and signs the commit also tags it and publishes it. Every other push to `main`
+is stamped `-dev.<run>` and published nowhere - it only names the run's
+workflow artifact.
 
-The tagged version's own `## [x.y.z]` section in `CHANGELOG.md` becomes both the
-GitHub release notes and the plugin's change-notes, so cut that section before
-tagging. Without one, the notes fall back to what GitHub generates from the
-commits and the change-notes to `[Unreleased]`.
+Pushing a `v*` tag by hand does the same thing, for releasing a commit that is
+not the tip of `main`.
+
+Either way, a version with `dev` in it - `0.2.0-dev.3` - publishes as a
+pre-release, and to a Marketplace channel of its own so a stable user is never
+offered it.
+
+The released version's own `## [x.y.z]` section in `CHANGELOG.md` becomes both
+the GitHub release notes and the plugin's change-notes, so cut that section in
+the same commit as the bump. Without one, the notes fall back to what GitHub
+generates from the commits and the change-notes to `[Unreleased]`.
 
 Signing and Marketplace publishing are skipped unless their secrets exist, so
 the release path works before either is set up:

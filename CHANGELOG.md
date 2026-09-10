@@ -5,6 +5,14 @@ All notable changes to this plugin are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-10
+
+### Changed
+
+- A version bump pushed to `main` publishes itself: the run that tests, builds
+  and signs that commit also tags and releases it. Pushing a `v*` tag by hand
+  still works, for releasing a commit that is not the tip of `main`.
+
 ## [0.1.1] - 2026-09-10
 
 ### Fixed
@@ -39,6 +47,7 @@ Initial release.
   Markdown**: a toggle per construct, and a project URL that overrides
   detection.
 
-[Unreleased]: https://github.com/NekoGryphou/jetbrains-glfm-plugin/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/NekoGryphou/jetbrains-glfm-plugin/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/NekoGryphou/jetbrains-glfm-plugin/releases/tag/v0.2.0
 [0.1.1]: https://github.com/NekoGryphou/jetbrains-glfm-plugin/releases/tag/v0.1.1
 [0.1.0]: https://github.com/NekoGryphou/jetbrains-glfm-plugin/releases/tag/v0.1.0

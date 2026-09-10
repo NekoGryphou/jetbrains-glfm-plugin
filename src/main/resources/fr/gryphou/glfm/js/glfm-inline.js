@@ -4,8 +4,13 @@
 
   const dom = namespace.dom;
 
-  const ADDITION = /\{\+([\s\S]+?)\+}|\[\+([\s\S]+?)\+]/g;
-  const DELETION = /\{-([\s\S]+?)-}|\[-([\s\S]+?)-]/g;
+  // `*?` and not `+?`: only rewritable text is joined into the string these
+  // run against, so a diff wrapping nothing but a code span or a link - which
+  // every text pass skips - reads as having no content at all. The DOM range
+  // still spans the element, and `wrapInText` rejects a match that turns out to
+  // delimit nothing, so a literal `{++}` is left alone.
+  const ADDITION = /\{\+([\s\S]*?)\+}|\[\+([\s\S]*?)\+]/g;
+  const DELETION = /\{-([\s\S]*?)-}|\[-([\s\S]*?)-]/g;
   const COLOR = /^(#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})|(?:rgba?|hsla?)\([^)]*\))$/;
 
   function diffSpan(className) {

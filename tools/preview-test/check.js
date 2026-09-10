@@ -82,6 +82,14 @@ const cases = [
   { name: "diff keeps bold inside it", md: "was {-old **bold** text-} now\n", expect: /glfm-deletion[^>]*>(<span[^>]*>[^<]*<\/span>)?[\s\S]*<strong/ },
   { name: "diff keeps a link inside it", md: "was {+see [docs](https://example.com)+} now\n", expect: /glfm-addition[\s\S]*href="https:\/\/example\.com"/ },
   { name: "diff keeps a code span inside it", md: "was {-a `x` b-} now\n", expect: /glfm-deletion[\s\S]*<code/ },
+  // Only rewritable text is joined, so a diff whose content is entirely a
+  // skipped element joins to nothing - the DOM range still spans the element.
+  { name: "diff wrapping only a code span renders", md: "was {+`stream.workers`+} now\n", expect: /glfm-addition[\s\S]*<code/, reject: /\{\+/ },
+  { name: "deletion wrapping only a code span renders", md: "was {-`buffer_limit`-} now\n", expect: /glfm-deletion[\s\S]*<code/, reject: /\{-/ },
+  { name: "diff wrapping only a link renders", md: "was {+[docs](https://example.com)+} now\n", expect: /glfm-addition[\s\S]*href="https:\/\/example\.com"/ },
+  { name: "bracket diff wrapping only a code span renders", md: "was [+`x`+] now\n", expect: /glfm-addition[\s\S]*<code/ },
+  // The relaxed quantifier must not swallow a diff that delimits nothing.
+  { name: "empty diff stays literal", md: "was {++} and {--} now\n", expectText: /\{\+\+}[\s\S]*\{--}/, reject: /glfm-addition|glfm-deletion/ },
   { name: "reference inside a diff is linked", md: "was {+see #123+} now\n", expect: /glfm-addition[\s\S]*glfm-reference[^>]*issues\/123/ },
   { name: "footnote definitions in one paragraph keep their markup", md: "A[^1] B[^2].\n\n[^1]: **first** one\n[^2]: see [docs](https://example.com)\n", expect: /<li id="glfm-fn-1">[\s\S]*<strong[\s\S]*<li id="glfm-fn-2">[\s\S]*href="https:\/\/example\.com"/ },
   { name: "footnote continuation line keeps its markup", md: "A[^1].\n\n[^1]: first line\n  continued **here**\n", expect: /glfm-footnotes[\s\S]*<strong/, expectText: /first line\s+continued\s+here/ },

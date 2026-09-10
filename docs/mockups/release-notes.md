@@ -21,9 +21,9 @@ before the upgrade keeps its original position.
 
 `widgets.yaml` gains a `stream:` block, and two keys move into it:
 
-- {+stream.chunk_bytes+} — new, defaults to `8388608`
-- {-import.buffer_limit-} — removed, ignored if still present
-- `import.workers` is now {+stream.workers+}
+- {+`stream.chunk_bytes`+} — new, defaults to `8388608`
+- {-`import.buffer_limit`-} — removed, ignored if still present
+- `import.workers` is now {+`stream.workers`+}
 
 The old names are accepted for one more minor release, with a deprecation
 warning at boot.

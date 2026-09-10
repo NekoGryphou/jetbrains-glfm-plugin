@@ -5,11 +5,16 @@ All notable changes to this plugin are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-09-10
+
 ### Fixed
 
 - Table of contents entries show a heading as the preview renders it, so a
   heading's `:warning:` reaches the contents as the glyph and `{+text+}` loses
   its delimiters, instead of both being copied in as raw source.
+- An inline diff whose content is nothing but a code span or a link renders:
+  ``{+`stream.workers`+}`` was left as source, while the same diff with text
+  around the code span worked. An empty `{++}` still stays literal.
 
 ## [0.1.0] - 2026-09-10
 
@@ -34,5 +39,6 @@ Initial release.
   Markdown**: a toggle per construct, and a project URL that overrides
   detection.
 
-[Unreleased]: https://github.com/NekoGryphou/jetbrains-glfm-plugin/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/NekoGryphou/jetbrains-glfm-plugin/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/NekoGryphou/jetbrains-glfm-plugin/releases/tag/v0.1.1
 [0.1.0]: https://github.com/NekoGryphou/jetbrains-glfm-plugin/releases/tag/v0.1.0

@@ -62,6 +62,21 @@
   }
 
   /**
+   * Whether a match delimits any content once its delimiters are shed.
+   *
+   * Only rewritable text is joined, so a construct wrapping nothing but a
+   * skipped element - `` {+`code`+} `` - reads as empty in the joined text
+   * while its DOM range still spans the element. The range is what decides:
+   * an element, or any text, is content. A match with neither is the literal
+   * `{++}` an author typed, and has to survive as written.
+   */
+  function wrapsContent(range, leading, trailing) {
+    const contents = range.cloneContents();
+    dom.trimText(contents, leading, trailing);
+    return contents.textContent !== "" || contents.querySelector("*") !== null;
+  }
+
+  /**
    * Replaces a match with `build`'s element, moving the captured content into
    * it instead of discarding it.
    *
@@ -72,15 +87,19 @@
    * kept, so nothing can be lost and no fragments are joined into new meaning.
    */
   function wrapMatch(nodes, match, build) {
-    const wrapper = build(match);
-    if (!wrapper) return;
-
     const group = capturedGroup(match);
     const inner = match.indices[group];
     const outer = rangeOf(nodes, match);
+    const leading = inner[0] - match.index;
+    const trailing = match.index + match[0].length - inner[1];
+
+    if (!wrapsContent(outer, leading, trailing)) return;
+
+    const wrapper = build(match);
+    if (!wrapper) return;
 
     const contents = outer.extractContents();
-    dom.trimText(contents, inner[0] - match.index, match.index + match[0].length - inner[1]);
+    dom.trimText(contents, leading, trailing);
 
     wrapper.appendChild(contents);
     outer.insertNode(wrapper);

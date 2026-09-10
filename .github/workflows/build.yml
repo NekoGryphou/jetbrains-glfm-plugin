@@ -192,7 +192,16 @@ jobs:
           # the release is what Marketplace received.
           archive=$(ls build/distributions/*-signed.zip 2>/dev/null || ls build/distributions/*.zip)
 
-          gh release create "$GITHUB_REF_NAME" "$archive" \
+          # Upload it under the plugin's own name. `signPlugin` writes
+          # `-signed.zip`, which names the build step rather than anything the
+          # person downloading it needs, and the suffix would otherwise follow
+          # the file all the way onto their disk.
+          case "$archive" in
+            *-signed.zip) asset="${archive%-signed.zip}.zip"; cp "$archive" "$asset" ;;
+            *)            asset="$archive" ;;
+          esac
+
+          gh release create "$GITHUB_REF_NAME" "$asset" \
             --repo "$GITHUB_REPOSITORY" \
             --title "${{ steps.build.outputs.version }}" \
             "${notes[@]}" "${prerelease[@]}"

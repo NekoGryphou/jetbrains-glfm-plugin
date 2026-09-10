@@ -1,0 +1,32 @@
+# The plugin is built against a JetBrains platform that moves on its own
+# schedule, so `platformVersion` in gradle.properties is deliberately not
+# tracked here - bumping it is a decision about which IDEs to support, not a
+# dependency update. What is tracked is everything that can go stale quietly.
+version: 2
+
+updates:
+  - package-ecosystem: gradle
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      gradle:
+        patterns: ["*"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]
+
+  # The preview test harness. Its lockfile is committed, so an update here is a
+  # real change to what the suite runs.
+  - package-ecosystem: npm
+    directory: /tools/preview-test
+    schedule:
+      interval: monthly
+    groups:
+      harness:
+        patterns: ["*"]

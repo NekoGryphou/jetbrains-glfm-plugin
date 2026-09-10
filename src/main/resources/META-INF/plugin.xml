@@ -1,0 +1,43 @@
+<idea-plugin>
+    <id>fr.gryphou.glfm</id>
+    <name>GitLab Flavored Markdown Preview</name>
+    <vendor url="https://github.com/NekoGryphou/jetbrains-glfm-plugin">Gryphou</vendor>
+
+    <description><![CDATA[
+    Renders <a href="https://docs.gitlab.com/user/markdown/">GitLab Flavored Markdown</a>
+    in the built-in Markdown preview.
+
+    <p>Adds rendering for:</p>
+    <ul>
+      <li>collapsible sections - <code>::: details Title</code></li>
+      <li>table of contents - <code>[[_TOC_]]</code></li>
+      <li>footnotes - <code>[^1]</code></li>
+      <li>multiline blockquotes - <code>&gt;&gt;&gt;</code></li>
+      <li>inline diffs - <code>{+added+}</code> and <code>{-removed-}</code></li>
+      <li>colour swatches for <code>#RGB</code>, <code>rgb()</code> and <code>hsl()</code> in inline code</li>
+      <li>emoji shortcodes - <code>:tada:</code></li>
+      <li>inapplicable task items - <code>[~]</code></li>
+      <li>links for audio and video</li>
+      <li>permalink anchors on headings</li>
+      <li>references to issues, merge requests, milestones, epics, labels and users,
+          linked against the project's GitLab remote</li>
+    </ul>
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>org.intellij.plugins.markdown</depends>
+
+    <extensions defaultExtensionNs="org.intellij.markdown">
+        <browserPreviewExtensionProvider
+                implementation="fr.gryphou.glfm.GlfmPreviewExtension$Provider"/>
+    </extensions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <projectConfigurable
+                id="Settings.Markdown.GitLab"
+                parentId="Settings.Markdown"
+                displayName="GitLab Flavored Markdown"
+                instance="fr.gryphou.glfm.GlfmConfigurable"
+                nonDefaultProject="true"/>
+    </extensions>
+</idea-plugin>

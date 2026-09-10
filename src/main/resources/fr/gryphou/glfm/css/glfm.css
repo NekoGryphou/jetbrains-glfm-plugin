@@ -1,0 +1,318 @@
+/*
+ * Styling for the GitLab-only constructs this plugin renders. Colours come from
+ * glfm-theme.css, which the plugin generates per IDE theme; everything here is
+ * scoped to .glfm-* so the platform's base stylesheet keeps owning normal
+ * Markdown output.
+ */
+
+/* ------------------------------------------------------- collapsible details */
+
+details.glfm-details {
+  margin: 1em 0;
+  padding: 0.6em 0.9em;
+  border: 1px solid var(--glfm-border);
+  border-radius: 4px;
+  background-color: var(--glfm-surface);
+}
+
+details.glfm-details > summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--glfm-fg);
+  list-style: none;
+  outline: none;
+}
+
+details.glfm-details > summary::-webkit-details-marker {
+  display: none;
+}
+
+details.glfm-details > summary::before {
+  content: "\25B8";
+  display: inline-block;
+  width: 1em;
+  color: var(--glfm-fg-muted);
+  transition: transform 0.12s ease-in-out;
+}
+
+details.glfm-details[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.glfm-details-body {
+  margin-top: 0.7em;
+}
+
+.glfm-details-body > :first-child {
+  margin-top: 0;
+}
+
+.glfm-details-body > :last-child {
+  margin-bottom: 0;
+}
+
+/* Fallback path: the body arrived as raw text because the source had no blank
+   lines, so at least keep the author's line breaks. */
+.glfm-details-raw {
+  white-space: pre-wrap;
+}
+
+/* -------------------------------------------------------- multiline blockquote */
+
+blockquote.glfm-multiline-quote {
+  margin: 1em 0;
+  padding: 0.2em 1em;
+  border-left: 3px solid var(--glfm-border-strong);
+  color: var(--glfm-fg-muted);
+}
+
+blockquote.glfm-multiline-quote > :first-child {
+  margin-top: 0;
+}
+
+blockquote.glfm-multiline-quote > :last-child {
+  margin-bottom: 0;
+}
+
+/* ----------------------------------------------------------- table of contents */
+
+nav.glfm-toc {
+  margin: 1em 0;
+  padding: 0.8em 1em;
+  border: 1px solid var(--glfm-border);
+  border-radius: 4px;
+  background-color: var(--glfm-surface);
+}
+
+nav.glfm-toc ul {
+  margin: 0;
+  padding-left: 1.4em;
+  list-style: none;
+}
+
+nav.glfm-toc > ul {
+  padding-left: 0;
+}
+
+nav.glfm-toc li {
+  margin: 0.15em 0;
+}
+
+/* An entry with no heading text of its own only exists to nest its children. */
+nav.glfm-toc ul:empty {
+  display: none;
+}
+
+nav.glfm-toc a {
+  color: var(--glfm-link);
+  text-decoration: none;
+}
+
+nav.glfm-toc a:hover {
+  text-decoration: underline;
+}
+
+/* ------------------------------------------------------------- heading anchors */
+
+/*
+ * Present but out of the way until the heading is hovered, the way GitLab's own
+ * permalinks behave. `opacity` rather than `display` keeps the heading's layout
+ * from shifting as the pointer moves over it.
+ */
+.glfm-heading-anchor {
+  margin-left: 0.4em;
+  color: var(--glfm-fg-muted);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.12s ease-in-out;
+}
+
+h1:hover > .glfm-heading-anchor,
+h2:hover > .glfm-heading-anchor,
+h3:hover > .glfm-heading-anchor,
+h4:hover > .glfm-heading-anchor,
+h5:hover > .glfm-heading-anchor,
+h6:hover > .glfm-heading-anchor,
+.glfm-heading-anchor:focus {
+  opacity: 1;
+}
+
+/* ------------------------------------------------------------------- footnotes */
+
+/*
+ * The definition paragraph stays in the document - it is what the next pass
+ * rebuilds the section from - and is hidden rather than removed, since its
+ * content is shown in the generated list instead.
+ */
+.glfm-footnote-definition {
+  display: none;
+}
+
+.glfm-footnotes {
+  margin-top: 2em;
+  font-size: 0.9em;
+  color: var(--glfm-fg-muted);
+}
+
+.glfm-footnotes hr {
+  border: none;
+  border-top: 1px solid var(--glfm-border);
+  margin-bottom: 0.8em;
+}
+
+.glfm-footnotes ol {
+  padding-left: 1.4em;
+}
+
+.glfm-footnote-ref a {
+  color: var(--glfm-link);
+  text-decoration: none;
+  padding: 0 0.15em;
+}
+
+.glfm-footnote-back {
+  color: var(--glfm-link);
+  text-decoration: none;
+}
+
+/* Highlight the footnote you just jumped to, the way GitLab does. */
+.glfm-footnotes li:target {
+  background-color: var(--glfm-surface-strong);
+  border-radius: 3px;
+}
+
+/* ----------------------------------------------------------------- inline diff */
+
+.glfm-addition {
+  background-color: var(--glfm-added-bg);
+  color: var(--glfm-added-fg);
+  border-radius: 3px;
+  padding: 0 0.2em;
+}
+
+.glfm-deletion {
+  background-color: var(--glfm-removed-bg);
+  color: var(--glfm-removed-fg);
+  border-radius: 3px;
+  padding: 0 0.2em;
+  text-decoration: line-through;
+}
+
+/* ---------------------------------------------------------------- color chips */
+
+.glfm-color-chip {
+  display: inline-block;
+  width: 0.85em;
+  height: 0.85em;
+  margin-right: 0.35em;
+  vertical-align: -0.1em;
+  border: 1px solid var(--glfm-border-strong);
+  border-radius: 2px;
+}
+
+/* ------------------------------------------------------------------ references */
+
+a.glfm-reference,
+a.glfm-mention {
+  color: var(--glfm-link);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+a.glfm-reference:hover,
+a.glfm-mention:hover {
+  text-decoration: underline;
+}
+
+a.glfm-mention {
+  background-color: var(--glfm-label-bg);
+  border-radius: 3px;
+  padding: 0 0.25em;
+}
+
+a.glfm-label {
+  display: inline-block;
+  padding: 0 0.5em;
+  border-radius: 10px;
+  background-color: var(--glfm-label-bg);
+  color: var(--glfm-label-fg);
+  font-size: 0.85em;
+  line-height: 1.6;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+a.glfm-label:hover {
+  text-decoration: none;
+  filter: brightness(0.94);
+}
+
+/* ------------------------------------------------------------------ task lists */
+
+li.glfm-task-inapplicable {
+  list-style-type: none;
+  color: var(--glfm-fg-muted);
+}
+
+li.glfm-task-inapplicable > .glfm-task-checkbox,
+li.glfm-task-inapplicable > p > .glfm-task-checkbox {
+  /* Rendered as an indeterminate box: neither done nor outstanding. */
+  appearance: none;
+  width: 0.85em;
+  height: 0.85em;
+  margin: 0 0.35em 0 -1.4em;
+  vertical-align: -0.05em;
+  border: 1px solid var(--glfm-border-strong);
+  border-radius: 2px;
+  background-color: var(--glfm-surface-strong);
+  position: relative;
+}
+
+li.glfm-task-inapplicable > .glfm-task-checkbox::after,
+li.glfm-task-inapplicable > p > .glfm-task-checkbox::after {
+  content: "";
+  position: absolute;
+  left: 15%;
+  right: 15%;
+  top: 45%;
+  height: 1px;
+  background-color: var(--glfm-fg-muted);
+}
+
+/* ---------------------------------------------------------------------- media */
+
+/* Rendered as a link, not a player: the preview's CSP forbids loading media. */
+a.glfm-media {
+  display: inline-block;
+  padding: 0.15em 0.6em;
+  border: 1px solid var(--glfm-border);
+  border-radius: 4px;
+  background-color: var(--glfm-surface);
+  color: var(--glfm-link);
+  text-decoration: none;
+}
+
+a.glfm-media:hover {
+  border-color: var(--glfm-border-strong);
+  text-decoration: underline;
+}
+
+a.glfm-media::before {
+  margin-right: 0.4em;
+  color: var(--glfm-fg-muted);
+}
+
+a.glfm-media-video::before {
+  content: "\25B6";
+}
+
+a.glfm-media-audio::before {
+  content: "\266A";
+}
+
+/* ---------------------------------------------------------------------- emoji */
+
+.glfm-emoji {
+  font-family: "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+  font-style: normal;
+}

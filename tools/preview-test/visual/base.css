@@ -1,0 +1,49 @@
+/*
+ * The neutral page the plugin's stylesheets are screenshotted against.
+ *
+ * Deliberately not the IDE's own preview stylesheet: that one lives in the
+ * Markdown plugin's jar and moves with the platform, so baselines taken against
+ * it would expire on every IDE bump and a diff would never be attributable to a
+ * change in this repo. Nothing here styles a .glfm-* construct - that is the
+ * thing under test.
+ */
+
+body {
+  /* Fixed, so a line wraps in the same place on every machine. */
+  width: 760px;
+  margin: 0;
+  padding: 24px;
+
+  /* Metrically stable across the Linux images this runs on. */
+  font-family: "DejaVu Sans", "Liberation Sans", sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+
+  color: var(--glfm-fg);
+  background-color: #ffffff;
+}
+
+/*
+ * The IDE paints the preview's own background from the editor theme; without a
+ * stand-in, a dark-theme screenshot is dark text on white.
+ */
+:root.glfm-dark body {
+  background-color: #1e1f22;
+}
+
+code, pre {
+  font-family: "DejaVu Sans Mono", "Liberation Mono", monospace;
+}
+
+a {
+  color: var(--glfm-link);
+}
+
+/*
+ * Screenshots are taken after the page has settled, but a transition caught
+ * mid-flight is the classic source of a one-pixel diff that passes on a rerun.
+ */
+*, *::before, *::after {
+  transition: none !important;
+  animation: none !important;
+}

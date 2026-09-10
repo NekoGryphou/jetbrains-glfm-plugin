@@ -1,0 +1,86 @@
+// Shortcodes GitLab renders as emoji. Deliberately a curated subset rather than
+// the full ~1800-entry Unicode set: this covers what actually shows up in
+// issues, MR descriptions and READMEs without shipping a large table into the
+// preview browser on every render. Add entries here as needed.
+// Null-prototype, so a shortcode that happens to name an Object member -
+// `:constructor:`, `:toString:` - resolves to nothing rather than to the
+// inherited value.
+window.__GLFM_EMOJI__ = Object.assign(Object.create(null), {
+  smile: "\u{1F604}", smiley: "\u{1F603}", grin: "\u{1F601}", grinning: "\u{1F600}",
+  laughing: "\u{1F606}", satisfied: "\u{1F606}", sweat_smile: "\u{1F605}", joy: "\u{1F602}",
+  rofl: "\u{1F923}", relaxed: "\u{263A}\u{FE0F}", blush: "\u{1F60A}", innocent: "\u{1F607}",
+  wink: "\u{1F609}", heart_eyes: "\u{1F60D}", kissing_heart: "\u{1F618}", yum: "\u{1F60B}",
+  stuck_out_tongue: "\u{1F61B}", stuck_out_tongue_winking_eye: "\u{1F61C}",
+  neutral_face: "\u{1F610}", expressionless: "\u{1F611}", no_mouth: "\u{1F636}",
+  smirk: "\u{1F60F}", unamused: "\u{1F612}", roll_eyes: "\u{1F644}", thinking: "\u{1F914}",
+  flushed: "\u{1F633}", disappointed: "\u{1F61E}", worried: "\u{1F61F}", cry: "\u{1F622}",
+  sob: "\u{1F62D}", triumph: "\u{1F624}", angry: "\u{1F620}", rage: "\u{1F621}",
+  exploding_head: "\u{1F92F}", sleeping: "\u{1F634}", mask: "\u{1F637}", sunglasses: "\u{1F60E}",
+  nerd_face: "\u{1F913}", confused: "\u{1F615}", upside_down_face: "\u{1F643}",
+  scream: "\u{1F631}", fearful: "\u{1F628}", cold_sweat: "\u{1F630}", weary: "\u{1F629}",
+  tired_face: "\u{1F62B}", sleepy: "\u{1F62A}", zzz: "\u{1F4A4}", shrug: "\u{1F937}",
+  facepalm: "\u{1F926}", raised_hands: "\u{1F64C}", pray: "\u{1F64F}", clap: "\u{1F44F}",
+  wave: "\u{1F44B}", ok_hand: "\u{1F44C}", "+1": "\u{1F44D}", thumbsup: "\u{1F44D}",
+  "-1": "\u{1F44E}", thumbsdown: "\u{1F44E}", punch: "\u{1F44A}", fist: "\u{270A}",
+  muscle: "\u{1F4AA}", point_up: "\u{261D}\u{FE0F}", point_right: "\u{1F449}",
+  point_left: "\u{1F448}", point_down: "\u{1F447}", eyes: "\u{1F440}", brain: "\u{1F9E0}",
+
+  heart: "\u{2764}\u{FE0F}", broken_heart: "\u{1F494}", sparkling_heart: "\u{1F496}",
+  fire: "\u{1F525}", star: "\u{2B50}", star2: "\u{1F31F}", sparkles: "\u{2728}",
+  boom: "\u{1F4A5}", collision: "\u{1F4A5}", zap: "\u{26A1}", tada: "\u{1F389}",
+  confetti_ball: "\u{1F38A}", trophy: "\u{1F3C6}", medal: "\u{1F3C5}", gem: "\u{1F48E}",
+  crown: "\u{1F451}", rocket: "\u{1F680}", airplane: "\u{2708}\u{FE0F}", ship: "\u{1F6A2}",
+  car: "\u{1F697}", bike: "\u{1F6B2}", construction: "\u{1F6A7}", hammer: "\u{1F528}",
+  wrench: "\u{1F527}", nut_and_bolt: "\u{1F529}", gear: "\u{2699}\u{FE0F}", toolbox: "\u{1F9F0}",
+  microscope: "\u{1F52C}", telescope: "\u{1F52D}", mag: "\u{1F50D}", key: "\u{1F511}",
+  lock: "\u{1F512}", unlock: "\u{1F513}", shield: "\u{1F6E1}\u{FE0F}", bug: "\u{1F41B}",
+  ant: "\u{1F41C}", spider: "\u{1F577}\u{FE0F}", snake: "\u{1F40D}", whale: "\u{1F433}",
+  dolphin: "\u{1F42C}", penguin: "\u{1F427}", turtle: "\u{1F422}", rabbit: "\u{1F430}",
+  cat: "\u{1F431}", dog: "\u{1F436}", fox_face: "\u{1F98A}", unicorn: "\u{1F984}",
+  bee: "\u{1F41D}", butterfly: "\u{1F98B}", octopus: "\u{1F419}", crab: "\u{1F980}",
+
+  white_check_mark: "\u{2705}", heavy_check_mark: "\u{2714}\u{FE0F}", ballot_box_with_check: "\u{2611}\u{FE0F}",
+  x: "\u{274C}", negative_squared_cross_mark: "\u{274E}", heavy_multiplication_x: "\u{2716}\u{FE0F}",
+  warning: "\u{26A0}\u{FE0F}", exclamation: "\u{2757}", question: "\u{2753}",
+  grey_question: "\u{2754}", bangbang: "\u{203C}\u{FE0F}", interrobang: "\u{2049}\u{FE0F}",
+  no_entry: "\u{26D4}", no_entry_sign: "\u{1F6AB}", stop_sign: "\u{1F6D1}",
+  recycle: "\u{267B}\u{FE0F}", arrows_counterclockwise: "\u{1F504}", repeat: "\u{1F501}",
+  arrow_right: "\u{27A1}\u{FE0F}", arrow_left: "\u{2B05}\u{FE0F}", arrow_up: "\u{2B06}\u{FE0F}",
+  arrow_down: "\u{2B07}\u{FE0F}", arrow_right_hook: "\u{21AA}\u{FE0F}", leftwards_arrow_with_hook: "\u{21A9}\u{FE0F}",
+
+  bulb: "\u{1F4A1}", memo: "\u{1F4DD}", pencil: "\u{1F4DD}", pencil2: "\u{270F}\u{FE0F}",
+  book: "\u{1F4D6}", books: "\u{1F4DA}", bookmark: "\u{1F516}", label: "\u{1F3F7}\u{FE0F}",
+  page_facing_up: "\u{1F4C4}", clipboard: "\u{1F4CB}", calendar: "\u{1F4C5}",
+  chart_with_upwards_trend: "\u{1F4C8}", chart_with_downwards_trend: "\u{1F4C9}",
+  bar_chart: "\u{1F4CA}", card_file_box: "\u{1F5C3}\u{FE0F}", file_folder: "\u{1F4C1}",
+  open_file_folder: "\u{1F4C2}", package: "\u{1F4E6}", inbox_tray: "\u{1F4E5}",
+  outbox_tray: "\u{1F4E4}", email: "\u{2709}\u{FE0F}", envelope: "\u{2709}\u{FE0F}",
+  bell: "\u{1F514}", no_bell: "\u{1F515}", loudspeaker: "\u{1F4E2}", mega: "\u{1F4E3}",
+  hourglass: "\u{231B}", hourglass_flowing_sand: "\u{23F3}", watch: "\u{231A}",
+  alarm_clock: "\u{23F0}", stopwatch: "\u{23F1}\u{FE0F}",
+
+  computer: "\u{1F4BB}", desktop: "\u{1F5A5}\u{FE0F}", keyboard: "\u{2328}\u{FE0F}",
+  floppy_disk: "\u{1F4BE}", cd: "\u{1F4BF}", satellite: "\u{1F4E1}", battery: "\u{1F50B}",
+  electric_plug: "\u{1F50C}", bulb_off: "\u{1F4A1}", link: "\u{1F517}", paperclip: "\u{1F4CE}",
+  pushpin: "\u{1F4CC}", round_pushpin: "\u{1F4CD}", scissors: "\u{2702}\u{FE0F}",
+  wastebasket: "\u{1F5D1}\u{FE0F}", coffee: "\u{2615}", tea: "\u{1F375}", beer: "\u{1F37A}",
+  beers: "\u{1F37B}", champagne: "\u{1F37E}", cake: "\u{1F370}", birthday: "\u{1F382}",
+  pizza: "\u{1F355}", hamburger: "\u{1F354}", apple: "\u{1F34E}", banana: "\u{1F34C}",
+
+  sunny: "\u{2600}\u{FE0F}", cloud: "\u{2601}\u{FE0F}", umbrella: "\u{2614}", snowflake: "\u{2744}\u{FE0F}",
+  snowman: "\u{26C4}", rainbow: "\u{1F308}", ocean: "\u{1F30A}", earth_africa: "\u{1F30D}",
+  earth_americas: "\u{1F30E}", earth_asia: "\u{1F30F}", moon: "\u{1F314}", sun_with_face: "\u{1F31E}",
+  seedling: "\u{1F331}", herb: "\u{1F33F}", four_leaf_clover: "\u{1F340}", maple_leaf: "\u{1F341}",
+  cherry_blossom: "\u{1F338}", rose: "\u{1F339}", sunflower: "\u{1F33B}", cactus: "\u{1F335}",
+  evergreen_tree: "\u{1F332}", deciduous_tree: "\u{1F333}", palm_tree: "\u{1F334}",
+
+  ghost: "\u{1F47B}", alien: "\u{1F47D}", robot: "\u{1F916}", skull: "\u{1F480}",
+  poop: "\u{1F4A9}", clown: "\u{1F921}", jack_o_lantern: "\u{1F383}", santa: "\u{1F385}",
+  gift: "\u{1F381}", balloon: "\u{1F388}", dart: "\u{1F3AF}", game_die: "\u{1F3B2}",
+  video_game: "\u{1F3AE}", musical_note: "\u{1F3B5}", notes: "\u{1F3B6}", art: "\u{1F3A8}",
+  clapper: "\u{1F3AC}", camera: "\u{1F4F7}", movie_camera: "\u{1F3A5}", microphone: "\u{1F3A4}",
+  headphones: "\u{1F3A7}", tv: "\u{1F4FA}", radio: "\u{1F4FB}", newspaper: "\u{1F4F0}",
+  moneybag: "\u{1F4B0}", dollar: "\u{1F4B5}", credit_card: "\u{1F4B3}", scales: "\u{2696}\u{FE0F}",
+  hospital: "\u{1F3E5}", house: "\u{1F3E0}", office: "\u{1F3E2}", factory: "\u{1F3ED}",
+  bank: "\u{1F3E6}", school: "\u{1F3EB}", train: "\u{1F686}", traffic_light: "\u{1F6A6}"
+});

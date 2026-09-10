@@ -1,0 +1,215 @@
+name: build
+
+# The plugin builds against a JetBrains IDE. Locally that is the one installed
+# on the machine (`localIdeDir` in gradle.properties); on a hosted runner that
+# directory does not exist, so the build falls back to downloading the release
+# named by `platformType`/`platformVersion`. The preview test suite renders with
+# that same downloaded IDE, so it needs nothing installed by hand.
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+# Releases are published from here, which needs more than read access.
+permissions:
+  contents: write
+
+concurrency:
+  group: build-${{ github.ref }}
+  # Never cancel a tagged run: it publishes a release.
+  cancel-in-progress: ${{ github.ref_type != 'tag' }}
+
+jobs:
+  # Everything in one job on purpose. Separate jobs do not share a filesystem,
+  # and the dominant cost is downloading and extracting the platform, which the
+  # tests, the build and the verifier all need - splitting them would pay it
+  # three times. It also means the archive published below is the exact one the
+  # verifier passed, not a rebuild of the same commit.
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # The platform is a multi-gigabyte download that is then extracted, and a
+      # hosted runner starts with little room to spare. The toolchains removed
+      # here are not used by this build.
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
+                      /usr/local/share/boost /opt/hostedtoolcache/CodeQL
+          df -h /
+
+      # The wrapper jar is a binary in the repository that the build then
+      # executes; this checks it against the checksums Gradle publishes.
+      - uses: gradle/actions/wrapper-validation@v6
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      # The preview suite runs in jsdom against the Markdown parser of the IDE
+      # the build already downloads, so Node is the only thing it needs here.
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: tools/preview-test/package-lock.json
+
+      - name: Install the preview harness
+        run: npm ci
+        working-directory: tools/preview-test
+
+      # The visual half renders in Chromium, which Playwright fetches separately
+      # from the npm install. `--with-deps` pulls the shared libraries a headless
+      # browser needs, which a hosted runner does not have by default.
+      - name: Install the visual harness browser
+        run: npx playwright install --with-deps chromium
+        working-directory: tools/preview-test
+
+      # Screenshot baselines are pixels, so the fonts have to be the same ones
+      # they were taken with. Emoji are the only glyphs the runner does not
+      # already carry.
+      - name: Install the emoji font
+        run: sudo apt-get install -y --no-install-recommends fonts-noto-color-emoji
+
+      # Split from the verifier below, so a problem resolving an IDE to verify
+      # against cannot stop the tests from reporting. Together these two are
+      # exactly what `check` runs.
+      - name: Tests
+        run: ./gradlew --no-daemon check -x verifyPlugin
+
+      # A tag names the version outright, so that is the version built, and
+      # `pluginVersion` in gradle.properties is only the version in development.
+      # Any other build is stamped with the run number, which is unique and
+      # increasing - every build otherwise calls itself the same version. Such
+      # a build is never published; it only names its workflow artifact.
+      - name: Name this build
+        id: build
+        run: |
+          if [ "$GITHUB_REF_TYPE" = tag ]; then
+            version="${GITHUB_REF_NAME#v}"
+            echo "gradle=-PpluginVersion=$version" >> "$GITHUB_OUTPUT"
+          else
+            declared=$(sed -n 's/^pluginVersion *= *//p' gradle.properties | tr -d '[:space:]')
+            suffix="dev.${{ github.run_number }}"
+            version="$declared-$suffix"
+            echo "gradle=-PpluginBuildSuffix=$suffix" >> "$GITHUB_OUTPUT"
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Build the installable plugin
+        run: ./gradlew --no-daemon buildPlugin ${{ steps.build.outputs.gradle }}
+
+      - name: Binary compatibility
+        run: ./gradlew --no-daemon verifyPlugin ${{ steps.build.outputs.gradle }}
+
+      # Kept for pull requests, where nothing is published.
+      - name: Upload the plugin
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: plugin-${{ steps.build.outputs.version }}
+          path: build/distributions/*.zip
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Upload the test and verifier reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: verify-reports
+          path: |
+            build/test-results/test/
+            build/reports/pluginVerifier/
+            tools/preview-test/test-results/
+            tools/preview-test/playwright-report/
+            tools/preview-test/visual/__screenshots__/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      # Both steps below are skipped until their secrets exist, so the release
+      # path works before any of this is set up. Reported as an output rather
+      # than tested inline: the `secrets` context is not available to a step's
+      # `if`, and a step's own `env` is not reliably available to its own.
+      - name: Check what a release can do
+        id: release
+        if: github.ref_type == 'tag'
+        env:
+          CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
+          PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+        run: |
+          [ -n "$CERTIFICATE_CHAIN" ] && echo "sign=true" >> "$GITHUB_OUTPUT"
+          [ -n "$PUBLISH_TOKEN" ] && echo "publish=true" >> "$GITHUB_OUTPUT"
+          echo "signing: ${CERTIFICATE_CHAIN:+configured}${CERTIFICATE_CHAIN:-not configured}"
+          echo "publishing: ${PUBLISH_TOKEN:+configured}${PUBLISH_TOKEN:-not configured}"
+          exit 0
+
+      # Marketplace refuses an unsigned upload. Signed here rather than inside
+      # the publish step so a tag that is never published still produces the
+      # archive that would have been, and so a signing failure is its own error.
+      - name: Sign the plugin
+        if: steps.release.outputs.sign == 'true'
+        env:
+          CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
+        run: ./gradlew --no-daemon signPlugin ${{ steps.build.outputs.gradle }}
+
+      # A tagged release. A tag with `dev` in it publishes as a pre-release,
+      # so `v0.2.0-dev.3` can be handed out as a durable link without
+      # presenting as final. Every other tag is a full release.
+      - name: Publish the release
+        if: github.ref_type == 'tag'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+
+          # Prefer this version's own changelog section; fall back to the notes
+          # GitHub generates from the commits.
+          python3 - "$version" > notes.md <<'PY'
+          import re, sys
+          version = sys.argv[1]
+          text = open("CHANGELOG.md", encoding="utf-8").read()
+          section = re.search(
+              r"^## \[" + re.escape(version) + r"\][^\n]*\n(.*?)(?=^## |\Z)",
+              text, re.S | re.M,
+          )
+          print((section.group(1) if section else "").strip())
+          PY
+
+          notes=(--notes-file notes.md)
+          [ -s notes.md ] || notes=(--generate-notes)
+
+          prerelease=()
+          case "$GITHUB_REF_NAME" in *dev*) prerelease=(--prerelease) ;; esac
+
+          # The signed archive when there is one, so what is downloaded from
+          # the release is what Marketplace received.
+          archive=$(ls build/distributions/*-signed.zip 2>/dev/null || ls build/distributions/*.zip)
+
+          gh release create "$GITHUB_REF_NAME" "$archive" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "${{ steps.build.outputs.version }}" \
+            "${notes[@]}" "${prerelease[@]}"
+
+      # Last on purpose. Marketplace can reject an upload for reasons that have
+      # nothing to do with the build - a listing that does not exist yet, a
+      # review still pending, an outage - and the GitHub release above is the
+      # durable artifact. Publishing it first means a rejection here costs the
+      # run's green tick, which it should, but not the release itself.
+      #
+      # The first version of a plugin has to be uploaded and approved by hand:
+      # `publishPlugin` can only update a listing that already exists.
+      - name: Publish to JetBrains Marketplace
+        if: steps.release.outputs.publish == 'true'
+        env:
+          PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+          CERTIFICATE_CHAIN: ${{ secrets.CERTIFICATE_CHAIN }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          PRIVATE_KEY_PASSWORD: ${{ secrets.PRIVATE_KEY_PASSWORD }}
+        run: ./gradlew --no-daemon publishPlugin ${{ steps.build.outputs.gradle }}

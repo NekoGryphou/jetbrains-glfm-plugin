@@ -1,0 +1,40 @@
+/*
+ * GitLab's palette, in both themes.
+ *
+ * The platform's preview stylesheet bakes theme colours straight into rules
+ * instead of exposing custom properties, so this file publishes its own set.
+ * The IDE decides which one applies: the entry script puts `glfm-dark` on the
+ * root element when the IDE is running a dark theme.
+ */
+
+:root {
+  --glfm-fg: #333238;
+  --glfm-fg-muted: #737278;
+  --glfm-border: #dcdcde;
+  --glfm-border-strong: #bfbfc3;
+  --glfm-surface: #fbfafd;
+  --glfm-surface-strong: #ececef;
+  --glfm-link: #1068bf;
+  --glfm-added-bg: #ecfdf0;
+  --glfm-added-fg: #24663b;
+  --glfm-removed-bg: #fef1f1;
+  --glfm-removed-fg: #ae1800;
+  --glfm-label-bg: #ececef;
+  --glfm-label-fg: #333238;
+}
+
+:root.glfm-dark {
+  --glfm-fg: #ececef;
+  --glfm-fg-muted: #89888d;
+  --glfm-border: #4c4b52;
+  --glfm-border-strong: #626168;
+  --glfm-surface: #28272d;
+  --glfm-surface-strong: #333238;
+  --glfm-link: #63a6e9;
+  --glfm-added-bg: #0a4020;
+  --glfm-added-fg: #91d4a8;
+  --glfm-removed-bg: #4b1a17;
+  --glfm-removed-fg: #f57f6c;
+  --glfm-label-bg: #434248;
+  --glfm-label-fg: #ececef;
+}

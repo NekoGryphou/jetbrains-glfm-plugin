@@ -1,0 +1,16 @@
+{
+  "name": "glfm-preview-test",
+  "private": true,
+  "description": "Renders Markdown with the IDE's own parser, runs the plugin's preview scripts over the result, and asserts what each construct becomes - as a DOM in jsdom, and as pixels and computed styles in Chromium.",
+  "scripts": {
+    "test": "node check.js",
+    "visual": "playwright test",
+    "visual:update": "playwright test --update-snapshots"
+  },
+  "dependencies": {
+    "jsdom": "^30.0.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0"
+  }
+}

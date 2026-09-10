@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
-    kotlin("jvm") version "2.4.10"
+    kotlin("jvm") version "2.4.20"
     id("org.jetbrains.intellij.platform") version "2.18.1"
     // Turns the CHANGELOG's section for this version into the plugin's
     // change-notes, so "What's New" in the IDE is the file, not a second copy of

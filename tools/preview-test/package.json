@@ -8,7 +8,7 @@
     "visual:update": "playwright test --update-snapshots"
   },
   "dependencies": {
-    "jsdom": "^30.0.1"
+    "jsdom": "^30.1.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.0"

@@ -1,0 +1,58 @@
+name: Publish existing release to Marketplace
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Existing GitHub release tag (for example v0.3.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+# Serialize uploads of the same version without canceling an active upload.
+concurrency:
+  group: marketplace-${{ inputs.release_tag }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      # Reuse the signed and verified release artifact, including when its
+      # original build ran before the Marketplace token was configured.
+      - name: Download the released plugin
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          if [[ ! "$RELEASE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[A-Za-z0-9.-]+)?$ ]]; then
+            echo 'Expected a release tag such as v0.3.0.' >&2
+            exit 1
+          fi
+          version="${RELEASE_TAG#v}"
+          asset="jetbrains-glfm-plugin-${version}.zip"
+          gh release download "$RELEASE_TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern "$asset" \
+            --dir "$RUNNER_TEMP/marketplace"
+          echo "PLUGIN_ARCHIVE=$RUNNER_TEMP/marketplace/$asset" >> "$GITHUB_ENV"
+          channel="${version#*-}"
+          if [ "$channel" = "$version" ]; then channel=''; else channel="${channel%%.*}"; fi
+          echo "MARKETPLACE_CHANNEL=$channel" >> "$GITHUB_ENV"
+
+      - name: Upload to JetBrains Marketplace
+        env:
+          PUBLISH_TOKEN: ${{ secrets.PUBLISH_TOKEN }}
+        run: |
+          if [ -z "$PUBLISH_TOKEN" ]; then
+            echo 'Set the PUBLISH_TOKEN repository Actions secret first.' >&2
+            exit 1
+          fi
+          curl --fail-with-body --silent --show-error \
+            --header "Authorization: Bearer $PUBLISH_TOKEN" \
+            --form-string 'xmlId=fr.gryphou.glfm' \
+            --form "file=@$PLUGIN_ARCHIVE" \
+            --form-string "channel=$MARKETPLACE_CHANNEL" \
+            https://plugins.jetbrains.com/api/updates/upload

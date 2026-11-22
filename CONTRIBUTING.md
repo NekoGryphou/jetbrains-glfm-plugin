@@ -166,6 +166,12 @@ the release path works before either is set up:
 | `PRIVATE_KEY_PASSWORD` | that key's password                               |
 | `PUBLISH_TOKEN`        | a Marketplace token, from your JetBrains profile  |
 
+To publish a GitHub release whose Marketplace upload was skipped or failed,
+run **Actions → Publish existing release to Marketplace → Run workflow** and
+enter its tag, for example `v0.3.0`. This uploads the signed ZIP already attached
+to the release, using `PUBLISH_TOKEN`, without rebuilding or recreating the
+GitHub release. Pre-release versions keep their own Marketplace channel.
+
 See [plugin signing](https://plugins.jetbrains.com/docs/intellij/plugin-signing.html)
 for generating the first three. The **first** version has to be uploaded and
 approved by hand: `publishPlugin` can only update a listing that already exists.

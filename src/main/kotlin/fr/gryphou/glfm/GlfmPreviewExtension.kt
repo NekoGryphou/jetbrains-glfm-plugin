@@ -87,6 +87,7 @@ class GlfmPreviewExtension(panel: MarkdownHtmlPanel) : MarkdownBrowserPreviewExt
             "js/glfm-dom.js",
             "js/glfm-text-nodes.js",
             "js/glfm-text.js",
+            "js/glfm-json-tables.js",
             "js/glfm-fold.js",
             "js/glfm-details.js",
             "js/glfm-quotes.js",

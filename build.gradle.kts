@@ -3,10 +3,11 @@ import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
 import org.jetbrains.intellij.platform.gradle.extensions.IntelliJPlatformDependenciesExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
-    kotlin("jvm") version "2.4.10"
-    id("org.jetbrains.intellij.platform") version "2.18.1"
+    kotlin("jvm") version "2.4.20"
+    id("org.jetbrains.intellij.platform") version "2.19.0"
     // Turns the CHANGELOG's section for this version into the plugin's
     // change-notes, so "What's New" in the IDE is the file, not a second copy of
     // it that drifts.
@@ -309,12 +310,18 @@ tasks.check {
 
 kotlin {
     compilerOptions {
-        jvmTarget = JvmTarget.JVM_21
         // Stay within the language/API level the bundled platform stdlib exposes,
         // even though a newer compiler is used to build.
         apiVersion = KotlinVersion.KOTLIN_2_2
         languageVersion = KotlinVersion.KOTLIN_2_2
     }
+}
+
+// The platform plugin supplies a task-level target from the IDE's Java version.
+// Set the tasks explicitly so newer IDE toolchains still emit Java 21 bytecode
+// for the oldest supported platform (2025.2).
+tasks.withType<KotlinJvmCompile>().configureEach {
+    compilerOptions.jvmTarget = JvmTarget.JVM_21
 }
 
 java {

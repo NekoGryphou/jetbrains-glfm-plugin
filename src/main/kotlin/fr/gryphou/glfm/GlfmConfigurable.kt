@@ -39,6 +39,7 @@ class GlfmConfigurable(private val project: Project) : BoundConfigurable("GitLab
             }
 
             group("Render") {
+                row { checkBox("JSON tables (<code>json:table</code>)").bindSelected(state::jsonTables) }
                 row { checkBox("Collapsible sections (<code>::: details</code>)").bindSelected(state::details) }
                 row { checkBox("Table of contents (<code>[[_TOC_]]</code>)").bindSelected(state::tableOfContents) }
                 row { checkBox("Footnotes (<code>[^1]</code>)").bindSelected(state::footnotes) }

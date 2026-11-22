@@ -54,7 +54,7 @@ class GlfmConfigScriptTest {
         val script = GlfmConfigScript.build(projectUrl, dark = false, state = GlfmState())
 
         val expected = listOf(
-            "references", "details", "tableOfContents", "footnotes", "multilineBlockquote",
+            "jsonTables", "references", "details", "tableOfContents", "footnotes", "multilineBlockquote",
             "inlineDiff", "colorChips", "emoji", "inapplicableTasks", "media",
             "headingAnchors", "headingIds",
         )

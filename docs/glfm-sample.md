@@ -145,6 +145,21 @@ graph LR
   A[Editor] --> B[Preview]
 ```
 
+## JSON tables
+
+The filter searches all columns. Select a column heading to cycle through
+ascending, descending, and original row order.
+
+```json:table
+{
+  "fields": [{"key": "name", "label": "Name"}, {"key": "count", "label": "Count"}],
+  "items": [{"name": "Alpha", "count": 2}, {"name": "Beta", "count": 10}],
+  "caption": "Example data",
+  "filter": true,
+  "sortable": true
+}
+```
+
 ## Must stay literal
 
 Nothing below should be transformed.

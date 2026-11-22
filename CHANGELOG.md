@@ -5,6 +5,22 @@ All notable changes to this plugin are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-22
+
+### Added
+
+- JSON tables (`json:table`) with inferred or explicit columns, custom labels
+  and captions, filtering, and keyboard-accessible sorting.
+
+### Changed
+
+- Update the build tooling, GitHub Actions, and preview test dependencies.
+
+### Fixed
+
+- Keep Java and Kotlin bytecode targeting JVM 21 with the updated IntelliJ
+  Platform Gradle plugin.
+
 ## [0.2.0] - 2026-09-10
 
 ### Changed

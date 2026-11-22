@@ -316,3 +316,31 @@ a.glfm-media-audio::before {
   font-family: "Noto Color Emoji", "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
   font-style: normal;
 }
+
+/* Native controls inherit the preview palette in both IDE themes. */
+.glfm-json-table { overflow-x: auto; margin: 1em 0; }
+.glfm-json-table caption { text-align: left; padding: .5em 0; }
+.glfm-json-filter { display: block; margin-bottom: .5em; }
+.glfm-json-filter input {
+  font: inherit;
+  color: inherit;
+  background: var(--glfm-surface);
+  border: 1px solid var(--glfm-border);
+  border-radius: 4px;
+  padding: .25em .5em;
+}
+.glfm-json-sort {
+  color: inherit;
+  font: inherit;
+  background: transparent;
+  border: 0;
+  padding: .2em;
+  cursor: pointer;
+}
+.glfm-json-table th[aria-sort="none"] button::after { content: " ↕"; }
+.glfm-json-table th[aria-sort="ascending"] button::after { content: " ↑"; }
+.glfm-json-table th[aria-sort="descending"] button::after { content: " ↓"; }
+.glfm-json-sort:focus-visible, .glfm-json-filter input:focus-visible {
+  outline: 2px solid var(--glfm-link);
+  outline-offset: 2px;
+}

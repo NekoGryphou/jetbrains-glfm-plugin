@@ -19,6 +19,7 @@ Download the `.zip` from the [releases page][releases], then go to
 
 | GitLab syntax | Rendered as |
 | --- | --- |
+| fenced `json:table` | a table with optional filtering and column sorting |
 | `::: details Title` … `:::` | a collapsible section |
 | `[[_TOC_]]`, `[TOC]` | a nested table of contents built from the headings |
 | `[^1]` with `[^1]: text` | numbered footnotes, with a back-linked list at the end |
@@ -35,11 +36,30 @@ Download the `.zip` from the [releases page][releases], then go to
 | `group/project#123` | cross-project reference |
 | any heading | a permalink anchor, shown on hover |
 
+### JSON tables
+
+````markdown
+```json:table
+{
+  "fields": [{"key": "name", "label": "Name"}, {"key": "count", "label": "Count"}],
+  "items": [{"name": "Alpha", "count": 2}, {"name": "Beta", "count": 10}],
+  "filter": true,
+  "sortable": true
+}
+```
+````
+
 ## Settings
 
 **Settings → Languages & Frameworks → Markdown → GitLab Flavored Markdown**
 
 ## Known limits
+
+JSON tables support `items`, inferred or explicit `fields`, custom labels and
+`caption`, `filter: true`, and `sortable: true` globally or per field. Headers
+cycle through ascending, descending, and original row order. Values render as
+plain text; the JSON-table `markdown` option is not supported. Invalid JSON
+stays visible as a code block.
 
 Audio and video will not play. The preview's Content Security Policy hardcodes
 `media-src 'none'`, and a plugin can only add script and style sources, so a

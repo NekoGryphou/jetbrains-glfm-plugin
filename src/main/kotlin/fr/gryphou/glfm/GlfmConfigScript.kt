@@ -28,6 +28,7 @@ object GlfmConfigScript {
             // otherwise produce relative hrefs pointing at the preview server.
             "references" to (state.references && resolvable),
             "details" to state.details,
+            "jsonTables" to state.jsonTables,
             "tableOfContents" to state.tableOfContents,
             "footnotes" to state.footnotes,
             "multilineBlockquote" to state.multilineBlockquote,

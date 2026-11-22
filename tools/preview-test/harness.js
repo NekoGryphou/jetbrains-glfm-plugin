@@ -31,7 +31,7 @@ function ideClasspath() {
 // Same order the plugin declares, minus the runtime-generated config script.
 const SCRIPTS = [
   "glfm-env.js", "glfm-emoji-data.js", "glfm-dom.js", "glfm-text-nodes.js", "glfm-text.js",
-  "glfm-fold.js", "glfm-details.js", "glfm-quotes.js", "glfm-headings.js",
+  "glfm-json-tables.js", "glfm-fold.js", "glfm-details.js", "glfm-quotes.js", "glfm-headings.js",
   "glfm-toc.js", "glfm-tasks.js", "glfm-media.js", "glfm-footnote-definitions.js",
   "glfm-footnotes.js", "glfm-inline.js", "glfm-emoji.js", "glfm-reference-urls.js",
   "glfm-references.js", "glfm-anchors.js", "glfm-pipeline.js", "glfm-report.js",
@@ -44,7 +44,7 @@ const SCRIPTS = [
 const STYLES = ["glfm-theme.css", "glfm.css"];
 
 const FEATURES = {
-  references: true, details: true, tableOfContents: true, footnotes: true,
+  jsonTables: true, references: true, details: true, tableOfContents: true, footnotes: true,
   multilineBlockquote: true, inlineDiff: true, colorChips: true, emoji: true,
   inapplicableTasks: true, media: true, headingAnchors: true,
   // Derived by GlfmPreviewExtension.kt; mirrored here so the harness matches

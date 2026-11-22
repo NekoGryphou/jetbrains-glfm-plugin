@@ -8,6 +8,7 @@
   // their transform rather than holding a reference, so a module that failed to
   // load costs only its own feature instead of breaking the list.
   const STEPS = [
+    { feature: "jsonTables", transform: "transformJsonTables" },
     { feature: "details", transform: "transformDetails" },
     { feature: "multilineBlockquote", transform: "transformMultilineBlockquotes" },
     { feature: "inapplicableTasks", transform: "transformInapplicableTasks" },

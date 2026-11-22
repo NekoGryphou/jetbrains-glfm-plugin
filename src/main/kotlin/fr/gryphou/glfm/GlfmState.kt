@@ -18,6 +18,7 @@ class GlfmState {
     var projectUrl: String = ""
 
     @JvmField var references: Boolean = true
+    @JvmField var jsonTables: Boolean = true
     @JvmField var details: Boolean = true
     @JvmField var tableOfContents: Boolean = true
     @JvmField var footnotes: Boolean = true

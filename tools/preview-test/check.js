@@ -8,6 +8,13 @@ const { renderMarkdown, transform } = require("./harness");
 const SAMPLE = fs.readFileSync(path.join(__dirname, "..", "..", "docs", "glfm-sample.md"), "utf8");
 
 const cases = [
+  { name: "JSON table infers columns", md: '```json:table\n{"items":[{"name":"Alice","count":2}]}\n```\n', expect: /glfm-json-table[\s\S]*<th[^>]*>Name<\/th>[\s\S]*<td>Alice<\/td>/ },
+  { name: "JSON table custom labels and caption", md: '```json:table\n{"fields":[{"key":"a","label":"AA"}],"items":[{"a":"11"}],"caption":"Data"}\n```\n', expect: /<caption>Data<\/caption>[\s\S]*>AA<\/th>[\s\S]*<td>11<\/td>/ },
+  { name: "invalid JSON table stays code", md: '```json:table\n{broken}\n```\n', expectText: /\{broken\}/, reject: /glfm-json-table/ },
+  { name: "JSON table rejects invalid rows", md: '```json:table\n{"items":[null]}\n```\n', reject: /glfm-json-table/ },
+  { name: "ordinary JSON stays code", md: '```json\n{"items":[{"a":1}]}\n```\n', reject: /glfm-json-table/ },
+  { name: "JSON cells never become HTML", md: '```json:table\n{"items":[{"a":"<img src=x onerror=alert(1)> :tada: #123"}]}\n```\n', expect: /&lt;img/, reject: /<img|glfm-reference|glfm-emoji/ },
+  { name: "JSON table string fields and missing values", md: '```json:table\n{"fields":["a","b"],"items":[{"a":false},{"a":0,"b":null}]}\n```\n', expect: /<td>false<\/td><td><\/td>[\s\S]*<td>0<\/td><td><\/td>/ },
   { name: "TOC [[_TOC_]]", md: "# One\n\n[[_TOC_]]\n\n## Two\n", expect: /<nav class="glfm-toc[\s\S]*href="#two"[^>]*>Two</ },
   { name: "TOC links to platform anchor", html: '<h2 id="platform-anchor">Title</h2><p>[TOC]</p>', expect: /href="#platform-anchor"/ },
   { name: "TOC [TOC]", md: "# One\n\n[TOC]\n\n## Two\n", expect: /<nav class="glfm-toc[\s\S]*href="#two"[^>]*>Two</ },
